@@ -1,12 +1,14 @@
 <?php 
+
+	$msg = 'block';
+	$msg_2 = 'none';
+
 	if(filter_has_var(INPUT_POST, "submit")){
 		$title = htmlspecialchars($_POST["title"]);
 		$short = htmlspecialchars($_POST["short"]);
 		$long = htmlspecialchars($_POST['long']);
 		$icon = $_FILES['icon']['name'];
 		$tempIcon = $_FILES['icon']['tmp_name'];
-		$graphic = $_FILES['graphic']['name'];
-		$tempGraphic = $_FILES['graphic']['tmp_name'];
 		$video = htmlspecialchars($_POST['promo']);
 		$policy = htmlspecialchars($_POST['policy']);
 		$apk = $_FILES['apk']['name'];
@@ -50,11 +52,11 @@
 		}
 		$apk_name = $user_id . '_' . $apk;
 		$icon_name = $user_id . '_'. $icon;
-		$graphic_name = $user_id.'_'. $graphic;
 		move_uploaded_file($tempApk, "apk/$apk_name");
 		move_uploaded_file($tempIcon, "icon/$icon_name");
-		move_uploaded_file($tempGraphic, "graphic/$graphic_name");
-		$sql = "INSERT INTO `upload-form`(`title`, `short`, `longDis`, `screenshots`, `icon`, `graphic`, `video`, `policy`, `apk`, `name`, `email`, `phone`, `userId`, `status`) VALUES ('$title','$short','$long','$screenshotsName','$icon_name','$graphic_name','$video','$policy','$apk_name','$name','$email','$phone','$user_id', 'Pending....')";
+		$sql = "INSERT INTO `upload-form`(`title`, `short`, `longDis`, `screenshots`, `icon`, `video`, `policy`, `apk`, `name`, `email`, `phone`, `userId`, `status`) VALUES ('$title','$short','$long','$screenshotsName','$icon_name','$video','$policy','$apk_name','$name','$email','$phone','$user_id', 'Pending....')";
+
+
 
 		$sqlLogin = "INSERT INTO `login`(`name`, `email`, `userId`, `password`, `phone`) VALUES ('$name', '$email', '$user_id', '$generte_mixed', '$phone')" ;
 		$run = mysqli_query($conn, $sql);
@@ -63,15 +65,24 @@
 		$subject  = 'Username And Password';
 		$body = '<h4>User ID: </h4><p>' . $user_id .'</p>
 			<h4> Password: </h4><p>' . $generte_mixed. '</p>';
-		$mail = "mittapallyn.min18@itbhu.ac.in";
+		$mail = "mittapally.nivesh@gmail.com";
 
 		$headers = "MIME-Version: 1.0" . "\r\n";
 		$headers .= "Content-Type:text/html;charset-UTF-8" . "\r\n";
 		$headers  .= "From: ". "Freeapp" .'<'.$mail.'>'."\r\n";
 
+		$sql_2 = "SELECT * FROM `upload-form` WHERE `userId` = '$user_id'";
+		$result = mysqli_query($conn, $sql_2);
+		$count = mysqli_num_rows($result);
+		if ($count === 1) {
+			# code...
+			$msg = 'none';
+			$msg_2 = 'block';
+		}
+
 		mail($email, $subject, $body, $headers);
 //linear-gradient(45deg,#9fbaa8,#31354c)
-		echo "<script>alert('Upload Successfully')</script>";
+		//echo "<script>alert('Upload Successfully')</script>";
 	}
  ?>
 
@@ -128,6 +139,7 @@
 			font-weight: bold;
 		}
 		.cont{
+			display: <?php echo $msg; ?>;
 			width: 50%;
 		    margin: auto;
 		    margin-top: 50px;
@@ -150,6 +162,37 @@
 		}
 		
 		.cont img {
+			display: block;
+			margin-bottom: 20px;
+			margin-left: auto;
+			margin-right: auto;
+		}
+
+		.container{
+			display: <?php echo $msg_2;?>;
+			width: 50%;
+		    margin: auto;
+		    margin-top: 50px;
+			color: #212121;
+			text-align: center;
+		}
+		
+		.container p {
+		    	font-family: 'Montserrat', sans-serif;
+				font-size: 47px;
+				font-weight: 700;
+				margin: 20px 0;
+				line-height: 55px;
+		}
+		
+		.container span{
+			font-size: 30px;
+			font-weight: bold;
+			line-height: 35px;
+			color: #64B5F6;
+		}
+		
+		.container img {
 			display: block;
 			margin-bottom: 20px;
 			margin-left: auto;
@@ -275,6 +318,12 @@
 		<p><span>Start uploading now!</span></p>
 		<button class="form" style="height: 55px;">UPLOAD  <i class="fa fa-upload"></i></button>
 	</div>
+	<div class="container">
+		<img src="logo3.png" alt="Upload apps for free" style="width: 100px;">
+		<img src="logo2.png" alt="Upload apps for free" style="width: 190px;">
+		<p><i style="color: #4CAF50; font-size: 70px; " class="fas fa-check-circle"></i><br> Your request has been submitted successfully</p>
+		<p><span>Your app will be uploaded in one week</span></p>
+	</div>
 	<div class="upload-box">
 		<div class="hide-upload-btn"><i class="fas fa-times"></i></div>
 		<div class="box">
@@ -302,11 +351,6 @@
 	      				<label style="font-weight: bold;">Icon*</label><br>
 	      				<input style="outline: none;" type="file" name="icon" required=""><br>
 	      				<small style="line-height: 17px;" >Select icon(512x512)</small>
-	    			</div>
-					<div>
-	      				<label style="font-weight: bold;">Featured Graphic*</label><br>
-	      				<input style="outline: none;" type="file" name="graphic" required=""><br>
-	      				<small style="line-height: 17px;" >Select featured graphic</small>
 	    			</div> 
 	    			<div>
 						<label style="font-weight: bold;">Promo Video</label><br>
